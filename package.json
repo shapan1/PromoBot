@@ -1,0 +1,21 @@
+{
+  "name": "promobot",
+  "version": "1.0.0",
+  "description": "a facebook messenger bot to help promote and support customer product search",
+  "main": "index.js",
+  "scripts": {
+    "test": "haha no"
+  },
+  "keywords": [
+    "messenger",
+    "bot",
+    "facebook"
+  ],
+  "author": "sdashore",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "request": "^2.81.0"
+  }
+}
