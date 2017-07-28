@@ -42,7 +42,7 @@ app.post('/webhook/', function (req, res) {
 			    sendGenericMessage(sender);
 		    	continue;
 		    }
-		    sendTextMessage(sender, text);
+		    sendTextMessage(sender, text + "\n Please type keyword 'website' to view our card");
 	    }
         if (event.postback) {
   	    let text = JSON.stringify(event.postback);
