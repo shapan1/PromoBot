@@ -44,6 +44,8 @@ app.post('/webhook/', function (req, res) {
     res.sendStatus(200);
 });
 
+const token = process.env.FB_PAGE_ACCESS_TOKEN;
+
 //function to echo back messages
 function sendTextMessage(sender, text) {
     let messageData = { text:text };
@@ -66,7 +68,7 @@ function sendTextMessage(sender, text) {
 
 //const token = "EAAbbRkzb8RYBAMMpnwvr8ZBQjT20RzTa2EUTeZAE4OslqLpeqJsYoE6f4SQ0NGQBygwyohAYSXdOVsWU5QJSzsd90keLycQsMWCCC33ZBujOwAyKYkTh6U5obw7IoSUGDGPeTj0CQ6WzZC1QBIqJwu02JnRaPq95M0uWZCSwdqwZDZD";
 
-const token = process.env.FB_PAGE_ACCESS_TOKEN;
+
 
 // Spin up the server
 app.listen(app.get('port'), function() {
