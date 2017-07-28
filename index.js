@@ -38,12 +38,17 @@ app.post('/webhook/', function (req, res) {
 	    let sender = event.sender.id;
 	    if (event.message && event.message.text) {
 		    let text = event.message.text;
-		    if (text === 'Generic') {
+		    if (text === 'Product') {
 			    sendGenericMessage(sender);
 		    	continue;
 		    }
 		    sendTextMessage(sender, text);
 	    }
+        if (event.postback) {
+  	    let text = JSON.stringify(event.postback);
+  	    sendTextMessage(sender, text);
+  	    continue;
+      }
     }
     res.sendStatus(200);
 });
@@ -80,14 +85,14 @@ function sendGenericMessage(sender) {
 	    "attachment": {
 		    "type": "template",
 		    "payload": {
-				"template_type": "generic",
+				"template_type": "Product",
 			    "elements": [{
 					"title": "First card",
 				    "subtitle": "Element #1 of an hscroll",
 				    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
 				    "buttons": [{
 					    "type": "web_url",
-					    "url": "https://www.messenger.com",
+					    "url": "http://teesburgh.com/",
 					    "title": "web url"
 				    }, {
 					    "type": "postback",
