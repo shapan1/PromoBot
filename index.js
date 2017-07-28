@@ -87,17 +87,13 @@ function sendGenericMessage(sender) {
 		    "payload": {
 				"template_type": "generic",
 			    "elements": [{
-					"title": "First card",
-				    "subtitle": "Element #1 of an hscroll",
-				    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+					"title": "Tees-Burgh",
+				    "subtitle": "local tees for local fiends",
+				    "image_url": "http://teesburgh.com/tb_temp_logo.png",
 				    "buttons": [{
 					    "type": "web_url",
 					    "url": "http://teesburgh.com/",
-					    "title": "web url"
-				    }, {
-					    "type": "postback",
-					    "title": "Postback",
-					    "payload": "Payload for first element in a generic bubble",
+					    "title": "Go to website"
 				    }],
 			    }, {
 				    "title": "Second card",
