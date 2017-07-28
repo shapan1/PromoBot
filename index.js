@@ -31,58 +31,83 @@ app.get('/webhook', function(req, res) {
   }  
 });
 
-app.post('/webhook/', function (req, res) {
-    let messaging_events = req.body.entry[0].messaging;
-    for (let i = 0; i < messaging_events.length; i++) {
-	    let event = req.body.entry[0].messaging[i];
-	    let sender = event.sender.id;
-	    if (event.message && event.message.text) {
-		    let text = event.message.text;
-		    if (text === 'website') {
-			    sendGenericMessage(sender);
-		    	continue;
-		    }
-		    sendTextMessage(sender, text + "\n Please type keyword 'website' to view our card");
-	    }
-        if (event.postback) {
-  	    let text = JSON.stringify(event.postback);
-  	    sendTextMessage(sender, text);
-  	    continue;
-      }
-    }
+app.post('/webhook', function (req, res) {
+  var data = req.body;
+  console.log(data.object);
+  // Make sure this is a page subscription
+  if (data.object === 'page') {
+
+    // Iterate over each entry - there may be multiple if batched
+    data.entry.forEach(function(entry) {
+      var pageID = entry.id;
+      var timeOfEvent = entry.time;
+
+      // Iterate over each messaging event
+      entry.messaging.forEach(function(event) {
+        if (event.message) {
+          receivedMessage(event);
+        } else {
+          console.log("Webhook received unknown event: ", event);
+        }
+      });
+    });
+
+    // Assume all went well.
+    // You must send back a 200, within 20 seconds, to let us know
+    // you've successfully received the callback. Otherwise, the request
+    // will time out and we will keep trying to resend.
     res.sendStatus(200);
+  }
 });
 
 
 const token = process.env.FB_PAGE_ACCESS_TOKEN;
 
-//function to echo back messages
-function sendTextMessage(sender, text) {
-    let messageData = { text:text };
-    request({
-	    url: 'https://graph.facebook.com/v2.6/me/messages',
-	    qs: {access_token:token},
-	    method: 'POST',
-		json: {
-		    recipient: {id:sender},
-			message: messageData,
-		}
-	}, function(error, response, body) {
-		if (error) {
-		    console.log('Error sending messages: ', error);
-		} else if (response.body.error) {
-		    console.log('Error: ', response.body.error);
-	    }
-    });
+function receivedMessage(event) {
+  var senderID = event.sender.id;
+
+  var recipientID = event.recipient.id;
+  var timeOfMessage = event.timestamp;
+  var message = event.message;
+
+  console.log("Received message for user %d and page %d at %d with message:", 
+    senderID, recipientID, timeOfMessage);
+  console.log(JSON.stringify(message));
+
+  var messageId = message.mid;
+
+  var messageText = message.text;
+  var messageAttachments = message.attachments;
+
+  if (messageText) {
+
+    // If we receive a text message, check to see if it matches a keyword
+    // and send back the example. Otherwise, just echo the text we received.
+    switch (messageText) {
+    	case 'Product':
+        	sendGenericMessage(senderID);
+        	break;
+		
+      default:
+        sendTextMessage(senderID, messageText);
+    }
+  } else if (messageAttachments) {
+    sendTextMessage(senderID, "Message with attachment received");
+  }
 };
 
 //const token = "EAAbbRkzb8RYBAMMpnwvr8ZBQjT20RzTa2EUTeZAE4OslqLpeqJsYoE6f4SQ0NGQBygwyohAYSXdOVsWU5QJSzsd90keLycQsMWCCC33ZBujOwAyKYkTh6U5obw7IoSUGDGPeTj0CQ6WzZC1QBIqJwu02JnRaPq95M0uWZCSwdqwZDZD";
 
 //text cards
 
-function sendGenericMessage(sender) {
-    let messageData = {
-	    "attachment": {
+function sendGenericMessage(recipientId, messageText) {
+  // To send a gneeric message reply.
+  let messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      "attachment": {
 		    "type": "template",
 		    "payload": {
 				"template_type": "generic",
@@ -107,22 +132,46 @@ function sendGenericMessage(sender) {
 			    }]
 		    }
 	    }
-    };
-    request({
-	    url: 'https://graph.facebook.com/v2.6/me/messages',
-	    qs: {access_token:token},
-	    method: 'POST',
-	    json: {
-		    recipient: {id:sender},
-		    message: messageData,
-	    }
-    }, function(error, response, body) {
-	    if (error) {
-		    console.log('Error sending messages: ', error);
-	    } else if (response.body.error) {
-		    console.log('Error: ', response.body.error);
-	    }
-    });
+    }
+  };  
+
+  callSendAPI(messageData);
+
+};
+
+function sendTextMessage(recipientId, messageText) {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: messageText
+    }
+  };
+
+  callSendAPI(messageData);
+};
+
+function callSendAPI(messageData) {
+  request({
+    uri: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: token },
+    method: 'POST',
+    json: messageData
+
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var recipientId = body.recipient_id;
+      var messageId = body.message_id;
+
+      console.log("Successfully sent generic message with id %s to recipient %s", 
+        messageId, recipientId);
+    } else {
+      console.error("Unable to send message.");
+      console.error(response);
+      console.error(error);
+    }
+  });  
 };
 
 
