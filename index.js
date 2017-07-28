@@ -19,12 +19,7 @@ app.get('/', function (req, res) {
 });
 
 // for Facebook verification
-// app.get('/webhook/', function (req, res) {
-// 	if (req.query['hub.verify_token'] === ) {
-// 		res.send(req.query['hub.challenge']);
-// 	}
-// 	res.send('Error, wrong token');
-// });
+
 app.get('/webhook', function(req, res) {
   if (req.query['hub.mode'] === 'subscribe' &&
       req.query['hub.verify_token'] === 'Darth_Vadar_is_my_father') {
