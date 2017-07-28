@@ -85,7 +85,7 @@ function sendGenericMessage(sender) {
 	    "attachment": {
 		    "type": "template",
 		    "payload": {
-				"template_type": "Product",
+				"template_type": "generic",
 			    "elements": [{
 					"title": "First card",
 				    "subtitle": "Element #1 of an hscroll",
