@@ -38,11 +38,16 @@ app.post('/webhook/', function (req, res) {
 	    let sender = event.sender.id;
 	    if (event.message && event.message.text) {
 		    let text = event.message.text;
+		    if (text === 'Generic') {
+			    sendGenericMessage(sender);
+		    	continue;
+		    }
 		    sendTextMessage(sender, text);
 	    }
     }
     res.sendStatus(200);
 });
+
 
 const token = process.env.FB_PAGE_ACCESS_TOKEN;
 
@@ -118,6 +123,7 @@ function sendGenericMessage(sender) {
 	    }
     });
 };
+
 
 // Spin up the server
 app.listen(app.get('port'), function() {
