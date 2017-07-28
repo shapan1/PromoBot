@@ -4,6 +4,7 @@
   "description": "a facebook messenger bot to help promote and support customer product search",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "haha no"
   },
   "keywords": [
